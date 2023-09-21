@@ -14,6 +14,6 @@ public class PhotoModel {
     private String photoName;
     private String photoType;
     private String downloadURL;
-    private String fileSize;
+    private Long fileSize;
 
 }

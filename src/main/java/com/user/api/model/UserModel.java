@@ -1,8 +1,6 @@
 package com.user.api.model;
 
-import com.user.api.entities.Photo;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import com.user.api.entities.Name;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +14,7 @@ import java.util.List;
 @Builder
 public class UserModel {
 
-    private String name;
+    private Name name;
     private String email;
     private List<PhotoModel> photo;
 
