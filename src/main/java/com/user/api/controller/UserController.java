@@ -1,15 +1,20 @@
 package com.user.api.controller;
 
+import com.user.api.entities.Photo;
 import com.user.api.entities.User;
 import com.user.api.model.PhotoModel;
 import com.user.api.model.UserModel;
 import com.user.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,5 +64,13 @@ public class UserController {
                 .email(user.getEmail())
                 .photo(photoModelList)
                 .build());
+    }
+
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<?> download(@PathVariable String fileName) throws FileNotFoundException {
+        Photo photo=userService.getFile(fileName);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(photo.getPhotoType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; fileName=\""+photo.getPhotoName()+"\"")
+                .body(new ByteArrayResource(photo.getData()));
     }
 }

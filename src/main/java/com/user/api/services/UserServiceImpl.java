@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,5 +57,11 @@ public class UserServiceImpl implements UserService{
         }).toList();
 
         return user;
+    }
+
+    @Override
+    public Photo getFile(String fileName) throws FileNotFoundException {
+        return photoRepository.findByPhotoName(fileName).orElseThrow(() ->new FileNotFoundException(fileName+"Does not exist " +
+                "or link broken"));
     }
 }
