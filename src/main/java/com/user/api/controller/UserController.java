@@ -5,9 +5,11 @@ import com.user.api.entities.User;
 import com.user.api.model.PhotoModel;
 import com.user.api.model.UserModel;
 import com.user.api.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,27 +28,26 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<?> findAllUser(){
-
-        return ResponseEntity.ok("?");
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/{userName}")
-    public ResponseEntity<?> findUser(@PathVariable String userName){
+    @GetMapping("/{userNameOrEmail}")
+    public ResponseEntity<?> findUser(@PathVariable String userNameOrEmail){
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userService.getUsers(userNameOrEmail));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findUserId(@PathVariable String id){
-
-        return ResponseEntity.ok().build();
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> findUserId(@PathVariable int id){
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("/register")
     public ResponseEntity<?> saveUser(@RequestParam("file") List<MultipartFile> file,
-            @RequestParam("f_name") String f_name, @RequestParam("m_name") String m_name,
-            @RequestParam("l_name") String l_name, @RequestParam("age") Integer age,
-            @RequestParam("email") String email){
+            @Valid @RequestParam("f_name") String f_name,@Valid @RequestParam("m_name") String m_name,
+            @Valid @RequestParam("l_name") String l_name,@Valid @RequestParam("age") Integer age,
+            @Valid @RequestParam("email") String email){
         User user= userService.saveUser(f_name,m_name,l_name,age,email,file);
         List<PhotoModel> photoModelList = file.stream().map(e -> {
             String downloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -59,11 +60,16 @@ public class UserController {
                     .downloadURL(downloadURL)
                     .build();
         }).toList();
-        return ResponseEntity.ok(UserModel.builder()
+//        return ResponseEntity.ok(UserModel.builder()
+//                .name(user.getName())
+//                .email(user.getEmail())
+//                .photo(photoModelList)
+//                .build());
+        return new ResponseEntity<UserModel>(UserModel.builder()
                 .name(user.getName())
                 .email(user.getEmail())
                 .photo(photoModelList)
-                .build());
+                .build(),HttpStatus.CREATED);
     }
 
     @GetMapping("/download/{fileName}")
